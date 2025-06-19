@@ -1,10 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkillSnap.Shared.Models; // adjust if needed
 
 namespace SkillSnap.Api.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class SkillsController : ControllerBase
     {
         private readonly SkillSnapContext _context;
@@ -20,6 +21,7 @@ namespace SkillSnap.Api.Controllers
             return Ok(_context.Skills);
         }
 
+        [Authorize] // Require authentication for POST
         [HttpPost]
         public IActionResult AddSkill([FromBody] Skill newSkill)
         {

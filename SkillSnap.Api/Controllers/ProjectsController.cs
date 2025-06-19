@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkillSnap.Shared.Models;
 
@@ -19,6 +20,7 @@ namespace SkillSnap.Api.Controllers
             return Ok(_context.Projects);
         }
 
+        [Authorize] // Require authentication for POST
         [HttpPost]
         public IActionResult AddProject([FromBody] Project newProject)
         {
@@ -26,5 +28,9 @@ namespace SkillSnap.Api.Controllers
             _context.SaveChanges();
             return CreatedAtAction(nameof(GetProjects), new { id = newProject.Id }, newProject);
         }
+
+        // For admin-only:
+        // [Authorize(Roles = "Admin")]
+        // public IActionResult DeleteProject(int id) { ... }
     }
 }
