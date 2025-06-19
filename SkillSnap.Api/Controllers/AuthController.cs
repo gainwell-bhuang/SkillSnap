@@ -6,6 +6,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.ComponentModel.DataAnnotations;
+using Xunit;
+using Xunit.Sdk;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -71,12 +74,18 @@ public class AuthController : ControllerBase
 
 public class RegisterModel
 {
-    public string Email { get; set; }
-    public string Password { get; set; }
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; } = string.Empty;
+    [Required]
+    public string Password { get; set; } = string.Empty;
 }
 
 public class LoginModel
 {
-    public string Email { get; set; }
-    public string Password { get; set; }
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; } = string.Empty;
+    [Required]
+    public string Password { get; set; } = string.Empty;
 }
