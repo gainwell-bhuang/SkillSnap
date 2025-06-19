@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using SkillSnap.Shared.Models;
 
 namespace SkillSnap.Api.Controllers
@@ -9,15 +10,23 @@ namespace SkillSnap.Api.Controllers
     public class ProjectsController : ControllerBase
     {
         private readonly SkillSnapContext _context;
-        public ProjectsController(SkillSnapContext context)
+        private readonly IMemoryCache _cache;
+
+        public ProjectsController(SkillSnapContext context, IMemoryCache cache)
         {
             _context = context;
+            _cache = cache;
         }
 
         [HttpGet]
         public IActionResult GetProjects()
         {
-            return Ok(_context.Projects);
+            if (!_cache.TryGetValue("Projects", out List<Project> cachedProjects))
+            {
+                cachedProjects = _context.Projects.ToList();
+                _cache.Set("Projects", cachedProjects, TimeSpan.FromMinutes(5));
+            }
+            return Ok(cachedProjects);
         }
 
         [Authorize] // Require authentication for POST
