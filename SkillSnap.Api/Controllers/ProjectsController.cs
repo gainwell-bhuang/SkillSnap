@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using SkillSnap.Shared.Models;
 
@@ -23,7 +24,9 @@ namespace SkillSnap.Api.Controllers
         {
             if (!_cache.TryGetValue("Projects", out List<Project> cachedProjects))
             {
-                cachedProjects = _context.Projects.ToList();
+                cachedProjects = _context.Projects
+                    .AsNoTracking() // Use AsNoTracking for better performance
+                    .ToList();
                 _cache.Set("Projects", cachedProjects, TimeSpan.FromMinutes(5));
             }
             return Ok(cachedProjects);

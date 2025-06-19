@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using SkillSnap.Shared.Models; // adjust if needed
 
@@ -23,7 +24,9 @@ namespace SkillSnap.Api.Controllers
         {
             if (!_cache.TryGetValue("Skills", out List<Skill> cachedSkills))
             {
-                cachedSkills = _context.Skills.ToList();
+                cachedSkills = _context.Skills
+                    .AsNoTracking() // Use AsNoTracking for better performance
+                    .ToList();
                 _cache.Set("Skills", cachedSkills, TimeSpan.FromMinutes(5));
             }
             return Ok(cachedSkills);
