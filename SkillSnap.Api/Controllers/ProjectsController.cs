@@ -12,6 +12,8 @@ namespace SkillSnap.Api.Controllers
     {
         private readonly SkillSnapContext _context;
         private readonly IMemoryCache _cache;
+        private static readonly string ProjectListCacheKey = "Projects";
+        private const int DefaultPageSize = 20;
 
         public ProjectsController(SkillSnapContext context, IMemoryCache cache)
         {
@@ -19,30 +21,119 @@ namespace SkillSnap.Api.Controllers
             _cache = cache;
         }
 
+        // GET: api/projects?page=1&pageSize=10
         [HttpGet]
-        public IActionResult GetProjects()
+        [ResponseCache(Duration = 60)]
+        public async Task<ActionResult<IEnumerable<ProjectDto>>> GetProjects(int page = 1, int pageSize = DefaultPageSize)
         {
-            if (!_cache.TryGetValue("Projects", out List<Project> cachedProjects))
+            string cacheKey = $"{ProjectListCacheKey}_Page{page}_Size{pageSize}";
+
+            if (!_cache.TryGetValue(cacheKey, out List<ProjectDto> projects))
             {
-                cachedProjects = _context.Projects
-                    .AsNoTracking() // Use AsNoTracking for better performance
-                    .ToList();
-                _cache.Set("Projects", cachedProjects, TimeSpan.FromMinutes(5));
+                projects = await _context.Projects
+                    .AsNoTracking()
+                    .OrderByDescending(p => p.CreatedDate)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .Select(p => new ProjectDto
+                    {
+                        Id = p.Id,
+                        Title = p.Title,
+                        Description = p.Description,
+                        CreatedDate = p.CreatedDate
+                    })
+                    .ToListAsync();
+
+                _cache.Set(cacheKey, projects, new MemoryCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+                    SlidingExpiration = TimeSpan.FromMinutes(2)
+                });
             }
-            return Ok(cachedProjects);
+
+            return Ok(projects);
         }
 
-        [Authorize] // Require authentication for POST
-        [HttpPost]
-        public IActionResult AddProject([FromBody] Project newProject)
+        // GET: api/projects/5
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<ProjectDto>> GetProjectById(int id)
         {
-            _context.Projects.Add(newProject);
-            _context.SaveChanges();
-            return CreatedAtAction(nameof(GetProjects), new { id = newProject.Id }, newProject);
+            var project = await _context.Projects
+                .AsNoTracking()
+                .Where(p => p.Id == id)
+                .Select(p => new ProjectDto
+                {
+                    Id = p.Id,
+                    Title = p.Title,
+                    Description = p.Description,
+                    CreatedDate = p.CreatedDate
+                })
+                .FirstOrDefaultAsync();
+
+            if (project == null)
+                return NotFound();
+
+            return Ok(project);
         }
 
-        // For admin-only:
-        // [Authorize(Roles = "Admin")]
-        // public IActionResult DeleteProject(int id) { ... }
+        // POST: api/projects
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> AddProject([FromBody] Project newProject)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            newProject.CreatedDate = DateTime.UtcNow;
+            _context.Projects.Add(newProject);
+            await _context.SaveChangesAsync();
+
+            // Invalidate all cached pages (simplest form)
+            _cache.Remove(ProjectListCacheKey);
+
+            return CreatedAtAction(nameof(GetProjectById), new { id = newProject.Id }, newProject);
+        }
+
+        // PUT: api/projects/5
+        [Authorize]
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateProject(int id, [FromBody] Project updatedProject)
+        {
+            if (id != updatedProject.Id)
+                return BadRequest("ID mismatch.");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var existing = await _context.Projects.FindAsync(id);
+            if (existing == null)
+                return NotFound();
+
+            existing.Title = updatedProject.Title;
+            existing.Description = updatedProject.Description;
+            existing.UpdatedDate = DateTime.UtcNow;
+
+            _context.Entry(existing).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            _cache.Remove(ProjectListCacheKey);
+            return NoContent();
+        }
+
+        // DELETE: api/projects/5
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteProject(int id)
+        {
+            var project = await _context.Projects.FindAsync(id);
+            if (project == null)
+                return NotFound();
+
+            _context.Projects.Remove(project);
+            await _context.SaveChangesAsync();
+
+            _cache.Remove(ProjectListCacheKey);
+            return NoContent();
+        }
     }
 }
