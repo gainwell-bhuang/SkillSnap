@@ -1,0 +1,16 @@
+# Build Folders (you can modify based on your project structure)
+bin/
+obj/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.cache
+
+# SQLite database files
+*.db
+
+# OS generated files
+.DS_Store
+Thumbs.db

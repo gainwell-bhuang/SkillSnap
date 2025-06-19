@@ -4,3 +4,5 @@ GET {{SkillSnap.Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+POST {{SkillSnap.Api_HostAddress}}/api/seed
+Accept: application/json
