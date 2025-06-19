@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using SkillSnap.Api.Models;
+using SkillSnap.Shared.Models;
 using System.Collections.Generic;
 using System.Linq;
 

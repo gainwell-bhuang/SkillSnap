@@ -17,7 +17,22 @@ builder.Services.AddDbContext<SkillSnapContext>(options =>
 
 builder.Services.AddControllers(); // Register controllers
 
+// Add CORS configuration
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowClient", policy =>
+    {
+        policy.WithOrigins(
+            "https://localhost:7241",
+            "http://localhost:5224"
+        )
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
+app.UseCors("AllowClient");
 
 // Auto-migrate database in development
 if (app.Environment.IsDevelopment())
@@ -35,4 +50,5 @@ app.MapControllers(); // Map controller endpoints
 app.UseHttpsRedirection();
 
 
+app.Run();
 app.Run();

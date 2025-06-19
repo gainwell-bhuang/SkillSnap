@@ -1,0 +1,19 @@
+@page "/skilltags"
+@using SkillSnap.Shared.Models
+@inject SkillService SkillService
+
+<h3>Skill Tags</h3>
+<ul>
+@foreach(var skill in skills)
+{
+    <li>@skill.Name</li> // adjust properties as needed
+}
+</ul>
+
+@code {
+    private List<Skill> skills = new();
+    protected override async Task OnInitializedAsync()
+    {
+        skills = await SkillService.GetSkillsAsync();
+    }
+}

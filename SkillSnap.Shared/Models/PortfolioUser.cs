@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace SkillSnap.Api.Models {
-    public class PortfolioUser {
+namespace SkillSnap.Shared.Models;
+
+public class PortfolioUser {
         [Key]
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty; 
@@ -12,5 +13,4 @@ namespace SkillSnap.Api.Models {
         // Navigation properties
         public List<Project> Projects { get; set; } = default!;
         public List<Skill> Skills { get; set; } = default!;
-    }
-}
+    } 

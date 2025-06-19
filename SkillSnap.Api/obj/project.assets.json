@@ -1188,6 +1188,16 @@
         "build": {
           "buildTransitive/net6.0/_._": {}
         }
+      },
+      "SkillSnap.Shared/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/SkillSnap.Shared.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/SkillSnap.Shared.dll": {}
+        }
       }
     }
   },
@@ -3340,6 +3350,11 @@
         "system.threading.channels.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "SkillSnap.Shared/1.0.0": {
+      "type": "project",
+      "path": "../SkillSnap.Shared/SkillSnap.Shared.csproj",
+      "msbuildProject": "../SkillSnap.Shared/SkillSnap.Shared.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -3348,6 +3363,7 @@
       "Microsoft.EntityFrameworkCore >= 9.0.6",
       "Microsoft.EntityFrameworkCore.Design >= 9.0.6",
       "Microsoft.EntityFrameworkCore.Sqlite >= 9.0.6",
+      "SkillSnap.Shared >= 1.0.0",
       "Swashbuckle.AspNetCore >= 9.0.1"
     ]
   },
@@ -3382,7 +3398,11 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\bensd\\Source\\Repos\\SkillSnap\\SkillSnap.Shared\\SkillSnap.Shared.csproj": {
+              "projectPath": "C:\\Users\\bensd\\Source\\Repos\\SkillSnap\\SkillSnap.Shared\\SkillSnap.Shared.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

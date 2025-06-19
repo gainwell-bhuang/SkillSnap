@@ -1,0 +1,19 @@
+@page "/projectlist"
+@using SkillSnap.Shared.Models
+@inject ProjectService ProjectService
+
+<h3>Project List</h3>
+<ul>
+@foreach(var project in projects)
+{
+    <li>@project.Title</li> // adjust properties as needed
+}
+</ul>
+
+@code {
+    private List<Project> projects = new();
+    protected override async Task OnInitializedAsync()
+    {
+        projects = await ProjectService.GetProjectsAsync();
+    }
+}

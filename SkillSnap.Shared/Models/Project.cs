@@ -1,7 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SkillSnap.Api.Models {
+namespace SkillSnap.Shared.Models
+{
     public class Project {
         [Key]
         public int Id { get; set; }
