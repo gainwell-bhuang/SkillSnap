@@ -42,7 +42,7 @@
     private async Task DeleteProject(int id)
     {
         await ProjectService.DeleteProjectAsync(id);
-        projects = await ProjectService.GetProjectsAsync();
+        projects = await ProjectService.GetProjectsAsync(); // refresh data
         StateHasChanged();
     }
 }

@@ -16,7 +16,7 @@
 
 @code {
     private LoginModel loginModel = new();
-    private string error;
+    private string? error;
 
     private async Task HandleLogin()
     {
@@ -33,7 +33,7 @@
 
     public class LoginModel
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
     }
 }

@@ -71,7 +71,6 @@ namespace SkillSnap.Api.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<ProjectDto>> GetProjectById(int id)
         {
-            // Project as early as possible and use FirstOrDefaultAsync for efficiency
             var project = await _context.Projects
                 .AsNoTracking()
                 .Where(p => p.Id == id)
@@ -129,7 +128,7 @@ namespace SkillSnap.Api.Controllers
             _context.Projects.Add(newProject);
             await _context.SaveChangesAsync();
 
-            ClearProjectCache();
+            ClearProjectCache(); // cache cleared after create
 
             return CreatedAtAction(nameof(GetProjectById), new { id = newProject.Id }, newProject);
         }
@@ -156,7 +155,7 @@ namespace SkillSnap.Api.Controllers
             _context.Entry(existing).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            ClearProjectCache();
+            ClearProjectCache(); // cache cleared after update
             return NoContent();
         }
 
@@ -172,7 +171,7 @@ namespace SkillSnap.Api.Controllers
             _context.Projects.Remove(project);
             await _context.SaveChangesAsync();
 
-            ClearProjectCache();
+            ClearProjectCache(); // cache cleared after delete
             return NoContent();
         }
     }

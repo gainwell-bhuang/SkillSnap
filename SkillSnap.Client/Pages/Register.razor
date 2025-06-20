@@ -15,7 +15,7 @@
 
 @code {
     private RegisterModel registerModel = new();
-    private string error;
+    private string? error;
 
     private async Task HandleRegister()
     {
@@ -32,7 +32,7 @@
 
     public class RegisterModel
     {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        public string? Email { get; set; }
+        public string? Password { get; set; }
     }
 }

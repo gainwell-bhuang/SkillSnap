@@ -10,6 +10,9 @@ namespace SkillSnap.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    /// <summary>
+    /// Controller for managing Skill CRUD operations and caching.
+    /// </summary>
     public class SkillsController : ControllerBase
     {
         private readonly SkillSnapContext _context;
@@ -24,6 +27,9 @@ namespace SkillSnap.Api.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Get all skills (with caching).
+        /// </summary>
         // GET: api/skills
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SkillDto>>> GetSkills()
@@ -60,11 +66,13 @@ namespace SkillSnap.Api.Controllers
             return Ok(cachedSkills);
         }
 
+        /// <summary>
+        /// Get a skill by ID.
+        /// </summary>
         // GET: api/skills/5
         [HttpGet("{id:int}")]
         public async Task<ActionResult<SkillDto>> GetSkillById(int id)
         {
-            // Project as early as possible and use FirstOrDefaultAsync for efficiency
             var skill = await _context.Skills
                 .AsNoTracking()
                 .Where(s => s.Id == id)
@@ -82,7 +90,77 @@ namespace SkillSnap.Api.Controllers
             return Ok(skill);
         }
 
-        // Utility method to clear all skill cache entries
+        /// <summary>
+        /// Add a new skill (requires authentication).
+        /// </summary>
+        // POST: api/skills
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> AddSkill([FromBody] Skill newSkill)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            _context.Skills.Add(newSkill);
+            await _context.SaveChangesAsync();
+
+            ClearSkillsCache(); // cache cleared after create
+
+            return CreatedAtAction(nameof(GetSkillById), new { id = newSkill.Id }, newSkill);
+        }
+
+        /// <summary>
+        /// Update a skill (requires authentication).
+        /// </summary>
+        // PUT: api/skills/5
+        [Authorize]
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> UpdateSkill(int id, [FromBody] Skill updatedSkill)
+        {
+            if (id != updatedSkill.Id)
+                return BadRequest("ID mismatch.");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var existing = await _context.Skills.FindAsync(id);
+            if (existing == null)
+                return NotFound();
+
+            existing.Name = updatedSkill.Name;
+            existing.Level = updatedSkill.Level;
+
+            _context.Entry(existing).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            ClearSkillsCache(); // cache cleared after update
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Delete a skill (requires Admin role).
+        /// </summary>
+        // DELETE: api/skills/5
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteSkill(int id)
+        {
+            var skill = await _context.Skills.FindAsync(id);
+            if (skill == null)
+                return NotFound();
+
+            _context.Skills.Remove(skill);
+            await _context.SaveChangesAsync();
+
+            ClearSkillsCache(); // cache cleared after delete
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Helper to clear all skill cache entries.
+        /// </summary>
         private void ClearSkillsCache()
         {
             // Remove all cache entries that start with the SkillsCacheKey
@@ -105,65 +183,6 @@ namespace SkillSnap.Api.Controllers
                 }
             }
             _cache.Remove(SkillsCacheKey);
-        }
-
-        // POST: api/skills
-        [Authorize]
-        [HttpPost]
-        public async Task<IActionResult> AddSkill([FromBody] Skill newSkill)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            _context.Skills.Add(newSkill);
-            await _context.SaveChangesAsync();
-
-            ClearSkillsCache();
-
-            return CreatedAtAction(nameof(GetSkillById), new { id = newSkill.Id }, newSkill);
-        }
-
-        // PUT: api/skills/5
-        [Authorize]
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateSkill(int id, [FromBody] Skill updatedSkill)
-        {
-            if (id != updatedSkill.Id)
-                return BadRequest("ID mismatch.");
-
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var existing = await _context.Skills.FindAsync(id);
-            if (existing == null)
-                return NotFound();
-
-            existing.Name = updatedSkill.Name;
-            existing.Level = updatedSkill.Level;
-
-            _context.Entry(existing).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            ClearSkillsCache();
-
-            return NoContent();
-        }
-
-        // DELETE: api/skills/5
-        [Authorize(Roles = "Admin")]
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteSkill(int id)
-        {
-            var skill = await _context.Skills.FindAsync(id);
-            if (skill == null)
-                return NotFound();
-
-            _context.Skills.Remove(skill);
-            await _context.SaveChangesAsync();
-
-            ClearSkillsCache();
-
-            return NoContent();
         }
     }
 }

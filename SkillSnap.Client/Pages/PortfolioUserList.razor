@@ -40,7 +40,7 @@
     private async Task DeleteUser(int id)
     {
         await PortfolioUserService.DeletePortfolioUserAsync(id);
-        users = await PortfolioUserService.GetPortfolioUsersAsync();
+        users = await PortfolioUserService.GetPortfolioUsersAsync(); // refresh data
         StateHasChanged();
     }
 }

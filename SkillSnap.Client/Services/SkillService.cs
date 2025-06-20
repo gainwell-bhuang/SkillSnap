@@ -16,7 +16,7 @@ public class SkillService
 
     public async Task<List<Skill>> GetSkillsAsync()
     {
-        return await _http.GetFromJsonAsync<List<Skill>>("api/skills");
+        return await _http.GetFromJsonAsync<List<Skill>>("api/skills") ?? new List<Skill>();
     }
 
     public async Task<Skill?> GetSkillByIdAsync(int id)

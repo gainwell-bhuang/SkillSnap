@@ -40,7 +40,7 @@
     private async Task DeleteSkill(int id)
     {
         await SkillService.DeleteSkillAsync(id);
-        skills = await SkillService.GetSkillsAsync();
+        skills = await SkillService.GetSkillsAsync(); // refresh data
         StateHasChanged();
     }
 }
