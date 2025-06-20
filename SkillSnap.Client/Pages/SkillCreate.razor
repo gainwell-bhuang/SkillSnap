@@ -1,0 +1,22 @@
+@page "/skillcreate"
+@using SkillSnap.Shared.Models
+@inject SkillService SkillService
+@inject NavigationManager Navigation
+
+<h3>Create Skill</h3>
+<EditForm Model="skill" OnValidSubmit="HandleCreate">
+    <InputText @bind-Value="skill.Name" class="form-control" placeholder="Name" />
+    <InputText @bind-Value="skill.Level" class="form-control mt-2" placeholder="Level" />
+    <button class="btn btn-success mt-3" type="submit">Create</button>
+    <button class="btn btn-secondary mt-3 ms-2" type="button" @onclick="@(() => Navigation.NavigateTo("/skilltags"))">Cancel</button>
+</EditForm>
+
+@code {
+    private Skill skill = new();
+
+    private async Task HandleCreate()
+    {
+        await SkillService.AddSkillAsync(skill);
+        Navigation.NavigateTo("/skilltags");
+    }
+}

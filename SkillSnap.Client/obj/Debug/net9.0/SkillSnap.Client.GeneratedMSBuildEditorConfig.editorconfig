@@ -40,16 +40,40 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZmlsZUNhcmQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/Pages/ProjectCreate.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvamVjdENyZWF0ZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/Pages/ProjectList.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvamVjdExpc3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/Pages/ProjectUpdate.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvamVjdFVwZGF0ZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/Pages/ProjectView.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvamVjdFZpZXcucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/Pages/Register.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVnaXN0ZXIucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/Pages/SkillCreate.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2tpbGxDcmVhdGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/Pages/SkillTags.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2tpbGxUYWdzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/Pages/SkillUpdate.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2tpbGxVcGRhdGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/Pages/SkillView.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2tpbGxWaWV3LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/_Imports.razor]

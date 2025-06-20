@@ -1,0 +1,32 @@
+@page "/projectview/{Id:int}"
+@using SkillSnap.Shared.Models
+@inject ProjectService ProjectService
+@inject NavigationManager Navigation
+
+<h3>Project Details</h3>
+@if (project == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <dl class="row">
+        <dt class="col-sm-2">Title</dt>
+        <dd class="col-sm-10">@project.Title</dd>
+        <dt class="col-sm-2">Description</dt>
+        <dd class="col-sm-10">@project.Description</dd>
+        <dt class="col-sm-2">Created</dt>
+        <dd class="col-sm-10">@project.CreatedDate.ToShortDateString()</dd>
+    </dl>
+    <button class="btn btn-secondary" @onclick="@(() => Navigation.NavigateTo("/projectlist"))">Back</button>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Project? project;
+
+    protected override async Task OnInitializedAsync()
+    {
+        project = await ProjectService.GetProjectByIdAsync(Id);
+    }
+}

@@ -1,0 +1,22 @@
+@page "/projectcreate"
+@using SkillSnap.Shared.Models
+@inject ProjectService ProjectService
+@inject NavigationManager Navigation
+
+<h3>Create Project</h3>
+<EditForm Model="project" OnValidSubmit="HandleCreate">
+    <InputText @bind-Value="project.Title" class="form-control" placeholder="Title" />
+    <InputTextArea @bind-Value="project.Description" class="form-control mt-2" placeholder="Description" />
+    <button class="btn btn-success mt-3" type="submit">Create</button>
+    <button class="btn btn-secondary mt-3 ms-2" type="button" @onclick="@(() => Navigation.NavigateTo("/projectlist"))">Cancel</button>
+</EditForm>
+
+@code {
+    private Project project = new();
+
+    private async Task HandleCreate()
+    {
+        await ProjectService.AddProjectAsync(project);
+        Navigation.NavigateTo("/projectlist");
+    }
+}

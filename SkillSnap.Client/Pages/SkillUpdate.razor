@@ -1,0 +1,35 @@
+@page "/skillupdate/{Id:int}"
+@using SkillSnap.Shared.Models
+@inject SkillService SkillService
+@inject NavigationManager Navigation
+
+<h3>Update Skill</h3>
+@if (skill == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <EditForm Model="skill" OnValidSubmit="HandleUpdate">
+        <InputText @bind-Value="skill.Name" class="form-control" placeholder="Name" />
+        <InputText @bind-Value="skill.Level" class="form-control mt-2" placeholder="Level" />
+        <button class="btn btn-primary mt-3" type="submit">Update</button>
+        <button class="btn btn-secondary mt-3 ms-2" type="button" @onclick="@(() => Navigation.NavigateTo("/skilltags"))">Cancel</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Skill? skill;
+
+    protected override async Task OnInitializedAsync()
+    {
+        skill = await SkillService.GetSkillByIdAsync(Id);
+    }
+
+    private async Task HandleUpdate()
+    {
+        await SkillService.UpdateSkillAsync(skill!);
+        Navigation.NavigateTo("/skilltags");
+    }
+}

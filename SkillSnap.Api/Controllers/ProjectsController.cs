@@ -90,6 +90,33 @@ namespace SkillSnap.Api.Controllers
             return Ok(project);
         }
 
+        // Utility method to clear all paged project cache entries
+        private void ClearProjectCache()
+        {
+            // Remove all cache entries that start with the ProjectListCacheKey
+            // (Assumes IMemoryCache is MemoryCache)
+            if (_cache is MemoryCache memoryCache)
+            {
+                var field = typeof(MemoryCache).GetField("_entries", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (field != null)
+                {
+                    var entries = field.GetValue(memoryCache) as IDictionary<object, object>;
+                    if (entries != null)
+                    {
+                        var keysToRemove = entries.Keys
+                            .Where(k => k is string s && s.StartsWith(ProjectListCacheKey))
+                            .ToList();
+                        foreach (var key in keysToRemove)
+                        {
+                            _cache.Remove(key);
+                        }
+                    }
+                }
+            }
+            // Always remove the main key as well (for safety)
+            _cache.Remove(ProjectListCacheKey);
+        }
+
         // POST: api/projects
         [Authorize]
         [HttpPost]
@@ -102,8 +129,7 @@ namespace SkillSnap.Api.Controllers
             _context.Projects.Add(newProject);
             await _context.SaveChangesAsync();
 
-            // Invalidate all cached pages (simplest form)
-            _cache.Remove(ProjectListCacheKey);
+            ClearProjectCache();
 
             return CreatedAtAction(nameof(GetProjectById), new { id = newProject.Id }, newProject);
         }
@@ -130,7 +156,7 @@ namespace SkillSnap.Api.Controllers
             _context.Entry(existing).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            _cache.Remove(ProjectListCacheKey);
+            ClearProjectCache();
             return NoContent();
         }
 
@@ -146,7 +172,7 @@ namespace SkillSnap.Api.Controllers
             _context.Projects.Remove(project);
             await _context.SaveChangesAsync();
 
-            _cache.Remove(ProjectListCacheKey);
+            ClearProjectCache();
             return NoContent();
         }
     }

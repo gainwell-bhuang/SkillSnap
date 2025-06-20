@@ -1,0 +1,35 @@
+@page "/projectupdate/{Id:int}"
+@using SkillSnap.Shared.Models
+@inject ProjectService ProjectService
+@inject NavigationManager Navigation
+
+<h3>Update Project</h3>
+@if (project == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <EditForm Model="project" OnValidSubmit="HandleUpdate">
+        <InputText @bind-Value="project.Title" class="form-control" placeholder="Title" />
+        <InputTextArea @bind-Value="project.Description" class="form-control mt-2" placeholder="Description" />
+        <button class="btn btn-primary mt-3" type="submit">Update</button>
+        <button class="btn btn-secondary mt-3 ms-2" type="button" @onclick="@(() => Navigation.NavigateTo("/projectlist"))">Cancel</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Project? project;
+
+    protected override async Task OnInitializedAsync()
+    {
+        project = await ProjectService.GetProjectByIdAsync(Id);
+    }
+
+    private async Task HandleUpdate()
+    {
+        await ProjectService.UpdateProjectAsync(project!);
+        Navigation.NavigateTo("/projectlist");
+    }
+}

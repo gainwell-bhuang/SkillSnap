@@ -1,19 +1,46 @@
 @page "/skilltags"
 @using SkillSnap.Shared.Models
 @inject SkillService SkillService
+@inject NavigationManager Navigation
 
-<h3>Skill Tags</h3>
-<ul>
-@foreach(var skill in skills)
-{
-    <li>@skill.Name</li> // adjust properties as needed
-}
-</ul>
+<h3>Skills</h3>
+<button class="btn btn-primary mb-3" @onclick="@(() => Navigation.NavigateTo("/skillcreate"))">Create Skill</button>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Level</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var skill in skills)
+        {
+            <tr>
+                <td>@skill.Name</td>
+                <td>@skill.Level</td>
+                <td>
+                    <button class="btn btn-info btn-sm me-1" @onclick="@(() => Navigation.NavigateTo($"/skillview/{skill.Id}"))">View</button>
+                    <button class="btn btn-warning btn-sm me-1" @onclick="@(() => Navigation.NavigateTo($"/skillupdate/{skill.Id}"))">Update</button>
+                    <button class="btn btn-danger btn-sm" @onclick="@(() => DeleteSkill(skill.Id))">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 @code {
     private List<Skill> skills = new();
+
     protected override async Task OnInitializedAsync()
     {
         skills = await SkillService.GetSkillsAsync();
+    }
+
+    private async Task DeleteSkill(int id)
+    {
+        await SkillService.DeleteSkillAsync(id);
+        skills = await SkillService.GetSkillsAsync();
+        StateHasChanged();
     }
 }

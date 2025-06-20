@@ -1,19 +1,48 @@
 @page "/projectlist"
 @using SkillSnap.Shared.Models
 @inject ProjectService ProjectService
+@inject NavigationManager Navigation
 
-<h3>Project List</h3>
-<ul>
-@foreach(var project in projects)
-{
-    <li>@project.Title</li> // adjust properties as needed
-}
-</ul>
+<h3>Projects</h3>
+<button class="btn btn-primary mb-3" @onclick="@(() => Navigation.NavigateTo("/projectcreate"))">Create Project</button>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var project in projects)
+        {
+            <tr>
+                <td>@project.Title</td>
+                <td>@project.Description</td>
+                <td>@project.CreatedDate.ToShortDateString()</td>
+                <td>
+                    <button class="btn btn-info btn-sm me-1" @onclick="@(() => Navigation.NavigateTo($"/projectview/{project.Id}"))">View</button>
+                    <button class="btn btn-warning btn-sm me-1" @onclick="@(() => Navigation.NavigateTo($"/projectupdate/{project.Id}"))">Update</button>
+                    <button class="btn btn-danger btn-sm" @onclick="@(() => DeleteProject(project.Id))">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 @code {
     private List<Project> projects = new();
+
     protected override async Task OnInitializedAsync()
     {
         projects = await ProjectService.GetProjectsAsync();
+    }
+
+    private async Task DeleteProject(int id)
+    {
+        await ProjectService.DeleteProjectAsync(id);
+        projects = await ProjectService.GetProjectsAsync();
+        StateHasChanged();
     }
 }

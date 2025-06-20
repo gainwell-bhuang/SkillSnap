@@ -82,6 +82,31 @@ namespace SkillSnap.Api.Controllers
             return Ok(skill);
         }
 
+        // Utility method to clear all skill cache entries
+        private void ClearSkillsCache()
+        {
+            // Remove all cache entries that start with the SkillsCacheKey
+            if (_cache is MemoryCache memoryCache)
+            {
+                var field = typeof(MemoryCache).GetField("_entries", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (field != null)
+                {
+                    var entries = field.GetValue(memoryCache) as IDictionary<object, object>;
+                    if (entries != null)
+                    {
+                        var keysToRemove = entries.Keys
+                            .Where(k => k is string s && s.StartsWith(SkillsCacheKey))
+                            .ToList();
+                        foreach (var key in keysToRemove)
+                        {
+                            _cache.Remove(key);
+                        }
+                    }
+                }
+            }
+            _cache.Remove(SkillsCacheKey);
+        }
+
         // POST: api/skills
         [Authorize]
         [HttpPost]
@@ -93,7 +118,7 @@ namespace SkillSnap.Api.Controllers
             _context.Skills.Add(newSkill);
             await _context.SaveChangesAsync();
 
-            _cache.Remove(SkillsCacheKey);
+            ClearSkillsCache();
 
             return CreatedAtAction(nameof(GetSkillById), new { id = newSkill.Id }, newSkill);
         }
@@ -119,7 +144,7 @@ namespace SkillSnap.Api.Controllers
             _context.Entry(existing).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            _cache.Remove(SkillsCacheKey);
+            ClearSkillsCache();
 
             return NoContent();
         }
@@ -136,7 +161,7 @@ namespace SkillSnap.Api.Controllers
             _context.Skills.Remove(skill);
             await _context.SaveChangesAsync();
 
-            _cache.Remove(SkillsCacheKey);
+            ClearSkillsCache();
 
             return NoContent();
         }
