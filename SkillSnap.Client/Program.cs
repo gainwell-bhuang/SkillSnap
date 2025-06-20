@@ -21,6 +21,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStat
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<UserSessionService>();
+builder.Services.AddScoped<PortfolioUserService>();
 
 
 await builder.Build().RunAsync();

@@ -13,4 +13,4 @@ public class PortfolioUser {
         // Navigation properties
         public List<Project> Projects { get; set; } = default!;
         public List<Skill> Skills { get; set; } = default!;
-    } 
+    }

@@ -1,0 +1,23 @@
+@page "/portfoliousercreate"
+@using SkillSnap.Shared.Models
+@inject PortfolioUserService PortfolioUserService
+@inject NavigationManager Navigation
+
+<h3>Create Portfolio User</h3>
+<EditForm Model="user" OnValidSubmit="HandleCreate">
+    <InputText @bind-Value="user.Name" class="form-control" placeholder="Name" />
+    <InputTextArea @bind-Value="user.Bio" class="form-control mt-2" placeholder="Bio" />
+    <InputText @bind-Value="user.ProfileImageUrl" class="form-control mt-2" placeholder="Profile Image URL" />
+    <button class="btn btn-success mt-3" type="submit">Create</button>
+    <button class="btn btn-secondary mt-3 ms-2" type="button" @onclick="@(() => Navigation.NavigateTo("/portfoliouserlist"))">Cancel</button>
+</EditForm>
+
+@code {
+    private PortfolioUser user = new();
+
+    private async Task HandleCreate()
+    {
+        await PortfolioUserService.AddPortfolioUserAsync(user);
+        Navigation.NavigateTo("/portfoliouserlist");
+    }
+}

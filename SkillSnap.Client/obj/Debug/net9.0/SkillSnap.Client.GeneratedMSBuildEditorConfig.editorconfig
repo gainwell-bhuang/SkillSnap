@@ -36,6 +36,22 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/Pages/PortfolioUserCreate.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUG9ydGZvbGlvVXNlckNyZWF0ZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/Pages/PortfolioUserList.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUG9ydGZvbGlvVXNlckxpc3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/Pages/PortfolioUserUpdate.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUG9ydGZvbGlvVXNlclVwZGF0ZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/Pages/PortfolioUserView.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUG9ydGZvbGlvVXNlclZpZXcucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/bensd/Source/Repos/SkillSnap/SkillSnap.Client/Pages/ProfileCard.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZmlsZUNhcmQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 

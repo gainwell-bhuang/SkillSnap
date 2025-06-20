@@ -17,15 +17,18 @@ public class AuthController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IConfiguration _config;
+    private readonly RoleManager<IdentityRole> _roleManager;
 
     public AuthController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
-        IConfiguration config)
+        IConfiguration config,
+        RoleManager<IdentityRole> roleManager)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _config = config;
+        _roleManager = roleManager;
     }
 
     [HttpPost("register")]
@@ -70,6 +73,22 @@ public class AuthController : ControllerBase
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    [HttpPost("make-admin")]
+    public async Task<IActionResult> MakeAdmin([FromBody] string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+            return NotFound("User not found.");
+
+        if (!await _roleManager.RoleExistsAsync("Admin"))
+            await _roleManager.CreateAsync(new IdentityRole("Admin"));
+
+        var result = await _userManager.AddToRoleAsync(user, "Admin");
+        if (result.Succeeded)
+            return Ok("User assigned to Admin role.");
+        return BadRequest(result.Errors);
+    }
 }
 
 public class RegisterModel
@@ -88,4 +107,5 @@ public class LoginModel
     public string Email { get; set; } = string.Empty;
     [Required]
     public string Password { get; set; } = string.Empty;
+}
 }

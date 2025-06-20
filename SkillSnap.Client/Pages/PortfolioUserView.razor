@@ -1,0 +1,32 @@
+@page "/portfoliouserview/{Id:int}"
+@using SkillSnap.Shared.Models
+@inject PortfolioUserService PortfolioUserService
+@inject NavigationManager Navigation
+
+<h3>Portfolio User Details</h3>
+@if (user == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <dl class="row">
+        <dt class="col-sm-2">Name</dt>
+        <dd class="col-sm-10">@user.Name</dd>
+        <dt class="col-sm-2">Bio</dt>
+        <dd class="col-sm-10">@user.Bio</dd>
+        <dt class="col-sm-2">Profile Image</dt>
+        <dd class="col-sm-10"><img src="@user.ProfileImageUrl" alt="Profile" width="100" /></dd>
+    </dl>
+    <button class="btn btn-secondary" @onclick="@(() => Navigation.NavigateTo("/portfoliouserlist"))">Back</button>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private PortfolioUser? user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await PortfolioUserService.GetPortfolioUserByIdAsync(Id);
+    }
+}
