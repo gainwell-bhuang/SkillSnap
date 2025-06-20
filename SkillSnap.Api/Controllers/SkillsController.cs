@@ -26,6 +26,7 @@ namespace SkillSnap.Api.Controllers
         {
             if (!_cache.TryGetValue(SkillsCacheKey, out List<SkillDto> cachedSkills))
             {
+                // Project as early as possible for better SQL and memory efficiency
                 cachedSkills = await _context.Skills
                     .AsNoTracking()
                     .OrderBy(s => s.Name)
@@ -51,6 +52,7 @@ namespace SkillSnap.Api.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<SkillDto>> GetSkillById(int id)
         {
+            // Project as early as possible and use FirstOrDefaultAsync for efficiency
             var skill = await _context.Skills
                 .AsNoTracking()
                 .Where(s => s.Id == id)

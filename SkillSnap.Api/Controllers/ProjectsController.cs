@@ -30,6 +30,7 @@ namespace SkillSnap.Api.Controllers
 
             if (!_cache.TryGetValue(cacheKey, out List<ProjectDto> projects))
             {
+                // Project as early as possible for better SQL and memory efficiency
                 projects = await _context.Projects
                     .AsNoTracking()
                     .OrderByDescending(p => p.CreatedDate)
@@ -58,6 +59,7 @@ namespace SkillSnap.Api.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<ProjectDto>> GetProjectById(int id)
         {
+            // Project as early as possible and use FirstOrDefaultAsync for efficiency
             var project = await _context.Projects
                 .AsNoTracking()
                 .Where(p => p.Id == id)
