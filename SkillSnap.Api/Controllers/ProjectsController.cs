@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using SkillSnap.Shared.Models;
+using System.Diagnostics;
 
 namespace SkillSnap.Api.Controllers
 {
@@ -12,13 +14,15 @@ namespace SkillSnap.Api.Controllers
     {
         private readonly SkillSnapContext _context;
         private readonly IMemoryCache _cache;
+        private readonly ILogger<ProjectsController> _logger;
         private static readonly string ProjectListCacheKey = "Projects";
         private const int DefaultPageSize = 20;
 
-        public ProjectsController(SkillSnapContext context, IMemoryCache cache)
+        public ProjectsController(SkillSnapContext context, IMemoryCache cache, ILogger<ProjectsController> logger)
         {
             _context = context;
             _cache = cache;
+            _logger = logger;
         }
 
         // GET: api/projects?page=1&pageSize=10
@@ -26,11 +30,12 @@ namespace SkillSnap.Api.Controllers
         [ResponseCache(Duration = 60)]
         public async Task<ActionResult<IEnumerable<ProjectDto>>> GetProjects(int page = 1, int pageSize = DefaultPageSize)
         {
+            var sw = Stopwatch.StartNew();
             string cacheKey = $"{ProjectListCacheKey}_Page{page}_Size{pageSize}";
 
             if (!_cache.TryGetValue(cacheKey, out List<ProjectDto> projects))
             {
-                // Project as early as possible for better SQL and memory efficiency
+                _logger.LogInformation("Cache miss for {CacheKey}", cacheKey);
                 projects = await _context.Projects
                     .AsNoTracking()
                     .OrderByDescending(p => p.CreatedDate)
@@ -51,6 +56,13 @@ namespace SkillSnap.Api.Controllers
                     SlidingExpiration = TimeSpan.FromMinutes(2)
                 });
             }
+            else
+            {
+                _logger.LogInformation("Cache hit for {CacheKey}", cacheKey);
+            }
+
+            sw.Stop();
+            _logger.LogInformation("GetProjects request duration: {ElapsedMilliseconds} ms", sw.ElapsedMilliseconds);
 
             return Ok(projects);
         }

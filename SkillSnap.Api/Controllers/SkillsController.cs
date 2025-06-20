@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using SkillSnap.Shared.Models;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace SkillSnap.Api.Controllers
 {
@@ -12,21 +14,24 @@ namespace SkillSnap.Api.Controllers
     {
         private readonly SkillSnapContext _context;
         private readonly IMemoryCache _cache;
+        private readonly ILogger<SkillsController> _logger;
         private const string SkillsCacheKey = "Skills";
 
-        public SkillsController(SkillSnapContext context, IMemoryCache cache)
+        public SkillsController(SkillSnapContext context, IMemoryCache cache, ILogger<SkillsController> logger)
         {
             _context = context;
             _cache = cache;
+            _logger = logger;
         }
 
         // GET: api/skills
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SkillDto>>> GetSkills()
         {
+            var sw = Stopwatch.StartNew();
             if (!_cache.TryGetValue(SkillsCacheKey, out List<SkillDto> cachedSkills))
             {
-                // Project as early as possible for better SQL and memory efficiency
+                _logger.LogInformation("Cache miss for {CacheKey}", SkillsCacheKey);
                 cachedSkills = await _context.Skills
                     .AsNoTracking()
                     .OrderBy(s => s.Name)
@@ -44,6 +49,13 @@ namespace SkillSnap.Api.Controllers
                     SlidingExpiration = TimeSpan.FromMinutes(2)
                 });
             }
+            else
+            {
+                _logger.LogInformation("Cache hit for {CacheKey}", SkillsCacheKey);
+            }
+
+            sw.Stop();
+            _logger.LogInformation("GetSkills request duration: {ElapsedMilliseconds} ms", sw.ElapsedMilliseconds);
 
             return Ok(cachedSkills);
         }
